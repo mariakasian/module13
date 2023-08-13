@@ -3,7 +3,7 @@ package org.example.jsonplaceholder;
 import java.io.IOException;
 
 public class JsonPlaceholderTest {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, InterruptedException {
         OpenTasksFetcher.fetchAndPrintOpenTasks(1);
         CommentFetcher.fetchAndSaveComments(2);
         JsonPlaceholderClient.getAllUsers();

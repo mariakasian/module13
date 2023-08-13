@@ -6,21 +6,31 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import java.io.FileReader;
 import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 
 public class JsonPlaceholderClient {
     private static final String URL = "https://jsonplaceholder.typicode.com/users";
-    public static void createNewUser() throws IOException {
+
+    public static void createNewUser() throws IOException, InterruptedException {
         Gson gson = new Gson();
         User newUser = gson.fromJson(new FileReader("user.json"), User.class);
-        Connection.Response response = Jsoup.connect(URL)
-                .method(Connection.Method.POST)
+        String newUserJson = gson.toJson(newUser);
+
+        HttpClient client = HttpClient.newHttpClient();
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(URL))
                 .header("Content-Type", "application/json")
-                .ignoreContentType(true)
-                .requestBody(gson.toJson(newUser))
-                .execute();
+                .POST(HttpRequest.BodyPublishers.ofString(newUserJson))
+                .build();
+
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
         System.out.println("Create New User Response: " + response.body());
     }
-
     public static void updateExistingUser(int userId) throws IOException {
         Connection.Response response = Jsoup.connect(URL + "/" + userId)
                 .method(Connection.Method.PUT)
